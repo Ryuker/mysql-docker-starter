@@ -1,7 +1,7 @@
 {
   "name": "express-mysql-crud-starter",
   "version": "1.0.0",
-  "description": "Starter using express and MySQL running in docker for easy setup",
+  "description": "Starter using Express and MySQL running in Docker for easy setup",
   "main": "index.js",
   "scripts": {
     "dev": "node --watch server.js "
@@ -12,6 +12,7 @@
   "dependencies": {
     "colors": "^1.4.0",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mysql2": "^3.10.1"
   }
 }
