@@ -1,6 +1,7 @@
 services: 
   db:
     image: mysql
+    container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: example_pass
   phpMyAdmin:
@@ -9,3 +10,7 @@ services:
       PMA_ARBITRARY: 1
     ports:
       - "8080:80"
+    volumes:
+      - dbdata:/var/lib/mysql
+volumes:
+  dbdata:
