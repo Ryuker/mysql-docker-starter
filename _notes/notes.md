@@ -1,12 +1,17 @@
 # MySQL CRUD Boilerplate
 
+using: 
+- MySQL Docker Compose setup
+- MySQL2 package for database queries - [MySQL2](https://sidorares.github.io/node-mysql2/docs)
+- NodeJS with ExpressJS package
 
-login: 
+
+**login:** 
 - ip adress: 172.18.0.2 
 - username: root
 - password: example_pass
 
-To get IP adress:
+## To get IP adress:
 ``` Terminal
 docker container ls 
 ```
@@ -18,7 +23,7 @@ docker inspect {dbname}
   - copy the ip adress (it can differ per session)
 
 
-resources:
+## resources:
 [persistent data config](https://tecadmin.net/docker-compose-persistent-mysql-data/)
 
 
