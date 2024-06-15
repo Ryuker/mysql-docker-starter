@@ -4,7 +4,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: example_pass
   phpMyAdmin:
-    image: phpMyAdmin
+    image: phpmyadmin
     environment:
       PMA_ARBITRARY: 1
     ports:
