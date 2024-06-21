@@ -1,5 +1,5 @@
-# mysql-docker-starter
-Starter for a mysql server in Express using a docker approach for a quick local development setup
+# Express SQLite CRUD Boilerplate
+Starter for a MySQL server in Express using a docker approach for a quick local development setup.
 
 
 **Uses:**
