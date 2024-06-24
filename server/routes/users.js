@@ -7,8 +7,10 @@ const {
   updateUserById,
   deleteUserById
 } = require('../controllers/users.js');
+const { db } = require('../services/dbService.js');
 
 const router = express.Router();
+router.use(db);
 
 // All Users
 router

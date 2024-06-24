@@ -1,8 +1,7 @@
 const colors = require('colors');
 const express = require('express');
 
-// middleware imports
-const asyncHandler = require('./middleware/async');
+// middleware import
 const errorHandler = require('./middleware/error');
 
 // utils
@@ -25,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Mount Routers
-app.use('/', users);
+app.use('/api/users', users);
 
 // - Error Handler
 app.use(errorHandler);

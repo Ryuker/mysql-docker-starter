@@ -1,13 +1,18 @@
 const mysql = require('mysql2/promise')
 const colors = require('colors');
+const asyncHandler = require('../middleware/async');
 
-// connect to DB
-const db = await mysql.createConnection({
-  host: 'localhost:8080',
-  user: 'root',
-  password: 'example_pass',
-  database: 'app_db'
-})
+const db = asyncHandler(async(req, res, next) => {
+  return next(
+    
+    await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'example_pass',
+    database: 'AppDB',
+    port: 3306
+  }));
+});
 
 // query database example
 // const [rows, fields] = await db.execute(
@@ -18,6 +23,9 @@ const db = await mysql.createConnection({
 // database methods
 function getAllRows(table) {
   const query = `SELECT * FROM ${table}`;
+
+  console.log('get all rows');
+  console.log(db);
 
   return new Promise((resolve) => {
     db.execute(query, [], (err, rows) => {
@@ -122,5 +130,6 @@ module.exports = {
   getRowById,
   addRow,
   updateRowById,
-  deleteRowById
+  deleteRowById,
+  db
 };
