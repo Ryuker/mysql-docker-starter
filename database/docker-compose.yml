@@ -7,6 +7,7 @@ services:
     ports:
       - "3307:3306"
 
+      
   phpMyAdmin:
     image: phpmyadmin
     environment:
