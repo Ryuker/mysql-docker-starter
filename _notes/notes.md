@@ -27,5 +27,9 @@ docker inspect {dbname}
 [persistent data config](https://tecadmin.net/docker-compose-persistent-mysql-data/)
 
 
+ToDo:
+[] Modify rest of dbService db query functions to use async version
+[] verify CRUD functionality
+
 
 
