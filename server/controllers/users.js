@@ -15,6 +15,8 @@ const table = "users";
 // @route   GET /
 // @access  Public
 exports.getUsers = asyncHandler( async (req, res, next) => {
+  console.log('route hit');
+  
   let data = await getAllRows(table);
 
   console.log(data);
