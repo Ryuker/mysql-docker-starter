@@ -1,17 +1,19 @@
 const mysql = require('mysql2/promise')
 const colors = require('colors');
 const asyncHandler = require('../middleware/async');
+const ErrorResponse = require('../utils/errorResponse');
 
-const db = asyncHandler(async(req, res, next) => {
-  return next(
-    
-    await mysql.createConnection({
+let db;
+const connect = asyncHandler(async(req, res, next) => {
+  db = await mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'example_pass',
     database: 'AppDB',
-    port: 3306
-  }));
+    port: 3307
+  });
+  
+  return next();
 });
 
 // query database example
@@ -21,18 +23,14 @@ const db = asyncHandler(async(req, res, next) => {
 // );
 
 // database methods
-function getAllRows(table) {
-  const query = `SELECT * FROM ${table}`;
-
-  console.log('get all rows');
-  console.log(db);
-
-  return new Promise((resolve) => {
-    db.execute(query, [], (err, rows) => {
-      if (err) resolve(err.message.red);
-      resolve(rows); 
-    });
-  });
+async function getAllRows(table) {
+  const query = `SELECTs * FROM ${table}`;
+  try {
+    const [results] = await db.execute(query);
+    return results;
+  } catch(err){
+    throw new ErrorResponse(`Error getting all users from database`, 500, query);
+  }
 }
 
 function getRowById(table,id) {
@@ -131,5 +129,5 @@ module.exports = {
   addRow,
   updateRowById,
   deleteRowById,
-  db
+  connect
 };
