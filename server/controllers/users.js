@@ -15,10 +15,13 @@ const table = "users";
 // @route   GET /
 // @access  Public
 exports.getUsers = asyncHandler( async (req, res, next) => {
+  req.params.table = table;
 
-  let data = await getAllRows(table);
+  let data = await getAllRows(req, res, next);
 
-  console.log(data);
+  if(!data) {
+    return next(new ErrorResponse('error getting all users from database'.red, 503));
+  }
 
   res.status(200).json({
     success: true,

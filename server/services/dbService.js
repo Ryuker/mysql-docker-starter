@@ -23,15 +23,34 @@ const connect = asyncHandler(async(req, res, next) => {
 // );
 
 // database methods
-async function getAllRows(table) {
-  const query = `SELECTs * FROM ${table}`;
-  try {
-    const [results] = await db.execute(query);
-    return results;
-  } catch(err){
-    throw new ErrorResponse(`Error getting all users from database`, 500, query);
-  }
-}
+const getAllRows = asyncHandler(async(req, res, next) => {
+  console.log('table:', req.params.table);
+  const query = `SELECTs * FROM ${req.params.table}`;
+
+  const [results] = await db.execute(query);
+  return next(results);
+
+  // try {
+  //   const [results] = await db.execute(query);
+  //   console.log(results);
+    
+  // }
+
+  // catch(err){
+  //   const {message, sqlMessage, ...errorTrimmed} = err;
+  //   throw new ErrorResponse(message, 503, errorTrimmed);
+  // }
+});
+
+// async function getAllRows(table) {
+//   const query = `SELECTs * FROM ${table}`;
+//   try {
+//     const [results] = await db.execute(query);
+//     return results;
+//   } catch(err){
+//     throw new ErrorResponse(`Error getting all users from database`, 500, query);
+//   }
+// }
 
 function getRowById(table,id) {
   const query = `SELECT * FROM ${table} WHERE id = ${id}`;
