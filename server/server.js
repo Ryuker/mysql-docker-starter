@@ -22,6 +22,7 @@ const users = require('./routes/users.js');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (req, res) => res.status(200).send(`<h1>Server Running</h1>`));
 
 // Mount Routers
 app.use('/api/users', users);
