@@ -26,9 +26,8 @@ app.use(connectDB);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/', root)
-
 // Mount Routers
+app.use('/', root)
 app.use('/api/users', users);
 
 // - Error Handler
