@@ -2,6 +2,7 @@ const mysql = require('mysql2/promise')
 const colors = require('colors');
 const { asyncHandler, asyncDBHandler }= require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
+const { param } = require('../routes/root');
 
 let db = { conn: undefined, isConnected: false};
 
@@ -26,7 +27,7 @@ const connectDB = asyncHandler(async(req, res, next) => {
 // );
 
 // database methods
-const getAllRows = asyncDBHandler(async(table, req) => {
+const getAllRows = asyncDBHandler(async(table) => {
   const query = `SELECT * FROM ${table}`;
 
   const [results] = await db.conn.execute(query);
@@ -34,15 +35,17 @@ const getAllRows = asyncDBHandler(async(table, req) => {
   return results;
 });
 
-const getRowById = asyncDBHandler( async(table, req) =>{
+const getRowById = asyncDBHandler( async(table) =>{
   const query = `SELECT * FROM ${table} WHERE id = ${req.params.id}`;
 
   const [results] = await db.conn.execute(query);
   return results;
 });
 
-function addRow(table, body) {
+const addRow = asyncDBHandler(async(table, body) => {
   const keys = Object.keys(body);
+
+  console.log('body:', body);
   
   let params = "";
   keys.map((key, index) => {
@@ -62,21 +65,19 @@ function addRow(table, body) {
 
   let paramValues = keys.map(key => body[key]);
 
-  // TODO add validation
+  // // TODO add validation
 
-  // Setup query
+  // // Setup query
   const query = `
     INSERT INTO ${table}(${params}) 
     VALUES (${valuesStr})
   `;
 
-  return new Promise((resolve) => {
-    db.execute(query, paramValues, function(err) {
-      if (err) resolve(err);
-      resolve(this.lastID); 
-    });
-  });
-}
+  const [results] = await db.conn.execute(query, paramValues);
+  
+  return {id: results.insertId};
+  
+});
 
 function updateRowById(table, id, body) {
   const columns = Object.entries(body);

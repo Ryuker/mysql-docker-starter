@@ -53,12 +53,12 @@ exports.addUser = asyncHandler( async (req, res, next) => {
   const data = await addRow(table, req.body);
   
   // check if there was an error adding to the database
-  if (data.code) {
+  if (!data) {
     console.error(data.message.red);
     return next(new ErrorResponse('Error adding user to the database', 404));
   }
   
-  const newUser = {data, ...req.body};
+  const newUser = {id: data.id, ...req.body };
 
   console.log(newUser);
   
