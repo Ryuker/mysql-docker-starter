@@ -2,9 +2,8 @@ const mysql = require('mysql2/promise')
 const colors = require('colors');
 const { asyncHandler, asyncDBHandler }= require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
-const { param } = require('../routes/root');
 
-let db = { conn: undefined, isConnected: false};
+const db = { conn: undefined, isConnected: false};
 
 const connectDB = asyncHandler(async(req, res, next) => {
   db.conn = await mysql.createConnection({
@@ -107,7 +106,7 @@ const deleteRowById = asyncDBHandler(async(table, id) => {
   const query = `DELETE FROM ${table} WHERE id = ?`;
 
   const results = await db.conn.execute(query, [id]);
-  
+
   return {id: id};
 });
 
