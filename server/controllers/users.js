@@ -18,7 +18,7 @@ exports.getUsers = asyncHandler( async (req, res, next) => {
   req.params.table = table;
 
   let data = await getAllRows(req, res, next);
-
+  
   if(!data) {
     return next(new ErrorResponse('error getting all users from database'.red, 503));
   }
@@ -26,7 +26,7 @@ exports.getUsers = asyncHandler( async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: data
-  });
+  });  
 });
 
 // @desc    Get single user by id

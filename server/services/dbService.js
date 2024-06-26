@@ -3,16 +3,19 @@ const colors = require('colors');
 const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
 
-let db;
-const connect = asyncHandler(async(req, res, next) => {
-  db = await mysql.createConnection({
+let db = { conn: undefined, isConnected: false};
+
+const connectDB = asyncHandler(async(req, res, next) => {
+  db.conn = await mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'example_pass',
     database: 'AppDB',
     port: 3307
-  });
-  
+  })
+
+  if (db.conn) db.isConnected = true;
+
   return next();
 });
 
@@ -24,22 +27,11 @@ const connect = asyncHandler(async(req, res, next) => {
 
 // database methods
 const getAllRows = asyncHandler(async(req, res, next) => {
-  console.log('table:', req.params.table);
-  const query = `SELECTs * FROM ${req.params.table}`;
+  const query = `SELECT * FROM ${req.params.table}`;
 
-  const [results] = await db.execute(query);
-  return next(results);
+  const [results] = await db.conn.execute(query);
 
-  // try {
-  //   const [results] = await db.execute(query);
-  //   console.log(results);
-    
-  // }
-
-  // catch(err){
-  //   const {message, sqlMessage, ...errorTrimmed} = err;
-  //   throw new ErrorResponse(message, 503, errorTrimmed);
-  // }
+  return results;
 });
 
 // async function getAllRows(table) {
@@ -148,5 +140,6 @@ module.exports = {
   addRow,
   updateRowById,
   deleteRowById,
-  connect
+  connectDB,
+  db
 };

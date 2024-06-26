@@ -2,7 +2,7 @@ const colors = require('colors');
 const ErrorResponse = require('../utils/errorResponse');
 
 const errorHandler = (err, req, res, next) => {
-  
+
   let error = { ...err };
   
   error.message = err.message;
@@ -12,6 +12,13 @@ const errorHandler = (err, req, res, next) => {
   if (error.code){
     error.message = 'Server error accessing database';
     error.statusCode = 503;
+  }
+
+  if(req.url == '/')
+    if (error.code ==='ENOTFOUND') {
+      console.log('Database not found');
+      res.status(error.statusCode).send(`<h1>Server running without the database connected</h1>`);
+      return next();
   }
 
   res.status(error.statusCode || 500).json({
