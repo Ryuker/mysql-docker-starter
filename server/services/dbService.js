@@ -35,8 +35,8 @@ const getAllRows = asyncDBHandler(async(table) => {
   return results;
 });
 
-const getRowById = asyncDBHandler( async(table) =>{
-  const query = `SELECT * FROM ${table} WHERE id = ${req.params.id}`;
+const getRowById = asyncDBHandler( async(table, id) =>{
+  const query = `SELECT * FROM ${table} WHERE id = ${id}`;
 
   const [results] = await db.conn.execute(query);
   return results;
@@ -79,7 +79,7 @@ const addRow = asyncDBHandler(async(table, body) => {
   
 });
 
-function updateRowById(table, id, body) {
+const updateRowById = asyncDBHandler(async(table, id, body) => {
   const columns = Object.entries(body);
 
   let columnsStr = "";
@@ -97,15 +97,10 @@ function updateRowById(table, id, body) {
   // Setup query
   const query = `UPDATE ${table} SET ${columnsStr} WHERE id = ?`;
 
-  return new Promise((resolve) => {
-    db.execute(query, [
-      id
-    ], function(err) {
-      if (err) resolve(err);
-      resolve({id: id}); 
-    });
-  });
-}
+  const [results] = await db.conn.execute(query, [id]);
+
+  return getRowById(table, id);
+});
 
 function deleteRowById(table, id) {
   // Setup query

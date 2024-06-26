@@ -1,6 +1,7 @@
 const {
   getAllRows,
   getRowById,
+  updateRowById,
   addRow,
   updateUserById,
   deleteUserById
@@ -31,7 +32,7 @@ exports.getUsers = asyncHandler( async (req, res, next) => {
 // @route   GET /:id
 // @access  Public
 exports.getUserById = asyncHandler( async (req, res, next) => {
-  let data = await getRowById(table, req);
+  let data = await getRowById(table, req.params.id);
 
   if (data.length === 0) {
     return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));
@@ -72,22 +73,24 @@ exports.addUser = asyncHandler( async (req, res, next) => {
 // @route   PUT /:id
 // @access  Private
 exports.updateUserById = asyncHandler( async (req, res, next) => {
+  const user = await getRowById(table, req.params.id);
   
+  if (user.length == 0){
+    return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 400));
+  }
+
   const data = await updateRowById(table, req.params.id, req.body);
   
   // check if there was an error adding to the database
-  if (data.code) {
-    console.error(data.message.red);
+  if (!data) {
     return next(new ErrorResponse('Error updating user in the database', 404));
   }
 
-  const updatedUser = await getUserById(data.id);
-
-  console.log(updatedUser);
+  console.log('updatedUser:', data);
   
   res.status(200).json({
     success: true,
-    data: updatedUser
+    data: data
   });
 });
 
