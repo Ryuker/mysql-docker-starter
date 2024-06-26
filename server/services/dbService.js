@@ -102,19 +102,14 @@ const updateRowById = asyncDBHandler(async(table, id, body) => {
   return getRowById(table, id);
 });
 
-function deleteRowById(table, id) {
+const deleteRowById = asyncDBHandler(async(table, id) => {
   // Setup query
   const query = `DELETE FROM ${table} WHERE id = ?`;
 
-  return new Promise((resolve) => {
-    db.execute(query, [
-      id
-    ], function(err) {
-      if (err) resolve(err);
-      resolve({id: id}); 
-    });
-  });
-}
+  const results = await db.conn.execute(query, [id]);
+  
+  return {id: id};
+});
 
 module.exports = {
   getAllRows,

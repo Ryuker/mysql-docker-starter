@@ -1,10 +1,9 @@
 const {
   getAllRows,
   getRowById,
-  updateRowById,
   addRow,
-  updateUserById,
-  deleteUserById
+  updateRowById,
+  deleteRowById
 } = require('../services/dbService');
 const { asyncHandler } = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
@@ -100,19 +99,24 @@ exports.updateUserById = asyncHandler( async (req, res, next) => {
 exports.deleteUserById = asyncHandler( async (req, res, next) => {
   const user = await getRowById(table, req.params.id);
 
+  if (user.length == 0){
+    return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 400));
+  }
+
   const data = await deleteRowById(table, req.params.id);
   
   // check if there was an error adding to the database
-  if (data.code) {
-    console.error(data.message.red);
+  if (!data) {
+    console.log(data.red);
     return next(new ErrorResponse('Error deleting user from the database', 404));
   }
 
+  const deletedUser = user[0];
   console.log(user);
   
   res.status(200).json({
     success: true,
-    message: `Deleted user ${user.username} with id ${data.id}`
+    message: `Deleted user ${deletedUser.first_name} with id ${data.id}`
   });
 });
 
