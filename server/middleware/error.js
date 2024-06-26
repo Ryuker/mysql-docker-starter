@@ -15,7 +15,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if(req.url == '/')
-    if (error.code ==='ENOTFOUND') {
+    if (error.code ==='ENOTFOUND' || error.code === 'ECONNREFUSED') {
       console.log('Database not found');
       res.status(error.statusCode).send(`<h1>Server running without the database connected</h1>`);
       return next();
