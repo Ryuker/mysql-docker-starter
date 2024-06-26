@@ -5,7 +5,7 @@ const {
   updateUserById,
   deleteUserById
 } = require('../services/dbService');
-const asyncHandler = require('../middleware/async');
+const { asyncHandler } = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
 
 // Specify table to reference in database
@@ -15,9 +15,7 @@ const table = "users";
 // @route   GET /
 // @access  Public
 exports.getUsers = asyncHandler( async (req, res, next) => {
-  req.params.table = table;
-
-  let data = await getAllRows(req, res, next);
+  let data = await getAllRows(table);
   
   if(!data) {
     return next(new ErrorResponse('error getting all users from database'.red, 503));
@@ -33,8 +31,7 @@ exports.getUsers = asyncHandler( async (req, res, next) => {
 // @route   GET /:id
 // @access  Public
 exports.getUserById = asyncHandler( async (req, res, next) => {
-
-  let data = await getRowById(table,req.params.id);
+  let data = await getRowById(table, req);
 
   if (data.length === 0) {
     return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));

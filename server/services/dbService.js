@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise')
 const colors = require('colors');
-const asyncHandler = require('../middleware/async');
+const { asyncHandler, asyncDBHandler }= require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
 
 let db = { conn: undefined, isConnected: false};
@@ -26,34 +26,20 @@ const connectDB = asyncHandler(async(req, res, next) => {
 // );
 
 // database methods
-const getAllRows = asyncHandler(async(req, res, next) => {
-  const query = `SELECT * FROM ${req.params.table}`;
+const getAllRows = asyncDBHandler(async(table, req) => {
+  const query = `SELECT * FROM ${table}`;
 
   const [results] = await db.conn.execute(query);
 
   return results;
 });
 
-// async function getAllRows(table) {
-//   const query = `SELECTs * FROM ${table}`;
-//   try {
-//     const [results] = await db.execute(query);
-//     return results;
-//   } catch(err){
-//     throw new ErrorResponse(`Error getting all users from database`, 500, query);
-//   }
-// }
+const getRowById = asyncDBHandler( async(table, req) =>{
+  const query = `SELECT * FROM ${table} WHERE id = ${req.params.id}`;
 
-function getRowById(table,id) {
-  const query = `SELECT * FROM ${table} WHERE id = ${id}`;
-
-  return new Promise((resolve) => {
-    db.execute(query, [], (err, rows) => {
-      if (err) resolve(err.message.red);
-      resolve(rows[0]); 
-    });
-  });
-}
+  const [results] = await db.conn.execute(query);
+  return results;
+});
 
 function addRow(table, body) {
   const keys = Object.keys(body);
