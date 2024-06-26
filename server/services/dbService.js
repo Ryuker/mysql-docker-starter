@@ -1,13 +1,23 @@
 const mysql = require('mysql2/promise')
 const colors = require('colors');
+const { asyncHandler, asyncDBHandler }= require('../middleware/async');
+const ErrorResponse = require('../utils/errorResponse');
 
-// connect to DB
-const db = await mysql.createConnection({
-  host: 'localhost:8080',
-  user: 'root',
-  password: 'example_pass',
-  database: 'app_db'
-})
+const db = { conn: undefined, isConnected: false};
+
+const connectDB = asyncHandler(async(req, res, next) => {
+  db.conn = await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'example_pass',
+    database: 'AppDB',
+    port: 3307
+  })
+
+  if (db.conn) db.isConnected = true;
+
+  return next();
+});
 
 // query database example
 // const [rows, fields] = await db.execute(
@@ -16,30 +26,25 @@ const db = await mysql.createConnection({
 // );
 
 // database methods
-function getAllRows(table) {
+const getAllRows = asyncDBHandler(async(table) => {
   const query = `SELECT * FROM ${table}`;
 
-  return new Promise((resolve) => {
-    db.execute(query, [], (err, rows) => {
-      if (err) resolve(err.message.red);
-      resolve(rows); 
-    });
-  });
-}
+  const [results] = await db.conn.execute(query);
 
-function getRowById(table,id) {
+  return results;
+});
+
+const getRowById = asyncDBHandler( async(table, id) =>{
   const query = `SELECT * FROM ${table} WHERE id = ${id}`;
 
-  return new Promise((resolve) => {
-    db.execute(query, [], (err, rows) => {
-      if (err) resolve(err.message.red);
-      resolve(rows[0]); 
-    });
-  });
-}
+  const [results] = await db.conn.execute(query);
+  return results;
+});
 
-function addRow(table, body) {
+const addRow = asyncDBHandler(async(table, body) => {
   const keys = Object.keys(body);
+
+  console.log('body:', body);
   
   let params = "";
   keys.map((key, index) => {
@@ -59,23 +64,21 @@ function addRow(table, body) {
 
   let paramValues = keys.map(key => body[key]);
 
-  // TODO add validation
+  // // TODO add validation
 
-  // Setup query
+  // // Setup query
   const query = `
     INSERT INTO ${table}(${params}) 
     VALUES (${valuesStr})
   `;
 
-  return new Promise((resolve) => {
-    db.execute(query, paramValues, function(err) {
-      if (err) resolve(err);
-      resolve(this.lastID); 
-    });
-  });
-}
+  const [results] = await db.conn.execute(query, paramValues);
+  
+  return {id: results.insertId};
+  
+});
 
-function updateRowById(table, id, body) {
+const updateRowById = asyncDBHandler(async(table, id, body) => {
   const columns = Object.entries(body);
 
   let columnsStr = "";
@@ -93,34 +96,26 @@ function updateRowById(table, id, body) {
   // Setup query
   const query = `UPDATE ${table} SET ${columnsStr} WHERE id = ?`;
 
-  return new Promise((resolve) => {
-    db.execute(query, [
-      id
-    ], function(err) {
-      if (err) resolve(err);
-      resolve({id: id}); 
-    });
-  });
-}
+  const [results] = await db.conn.execute(query, [id]);
 
-function deleteRowById(table, id) {
+  return getRowById(table, id);
+});
+
+const deleteRowById = asyncDBHandler(async(table, id) => {
   // Setup query
   const query = `DELETE FROM ${table} WHERE id = ?`;
 
-  return new Promise((resolve) => {
-    db.execute(query, [
-      id
-    ], function(err) {
-      if (err) resolve(err);
-      resolve({id: id}); 
-    });
-  });
-}
+  const results = await db.conn.execute(query, [id]);
+
+  return {id: id};
+});
 
 module.exports = {
   getAllRows,
   getRowById,
   addRow,
   updateRowById,
-  deleteRowById
+  deleteRowById,
+  connectDB,
+  db
 };

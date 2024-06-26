@@ -1,9 +1,10 @@
 const colors = require('colors');
 const express = require('express');
 
-// middleware imports
-const asyncHandler = require('./middleware/async');
+// middleware import
 const errorHandler = require('./middleware/error');
+const asyncHandler = require('./middleware/async');
+const { connectDB } = require('./services/dbService.js');
 
 // utils
 const ErrorResponse = require('./utils/errorResponse');
@@ -11,10 +12,12 @@ const ErrorResponse = require('./utils/errorResponse');
 const app = express();
 
 // Route files
-const users = require('./routes/users.js');
+const root = require('./routes/root')
+const users = require('./routes/users');
 
 //////////////
 // db stuff
+app.use(connectDB);
 
 /////////////////
 /// Middleware //
@@ -23,9 +26,9 @@ const users = require('./routes/users.js');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 // Mount Routers
-app.use('/', users);
+app.use('/', root);
+app.use('/api/users', users);
 
 // - Error Handler
 app.use(errorHandler);
