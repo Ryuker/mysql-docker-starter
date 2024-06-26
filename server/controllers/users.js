@@ -110,9 +110,11 @@ exports.deleteUserById = asyncHandler( async (req, res, next) => {
     console.log(data.red);
     return next(new ErrorResponse('Error deleting user from the database', 404));
   }
-  
+
   const deletedUser = user[0];
   
+  console.log('deletedUser:', deletedUser );
+
   res.status(200).json({
     success: true,
     message: `Deleted user ${deletedUser.first_name} with id ${data.id}`
